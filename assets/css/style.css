@@ -1,0 +1,15 @@
+/* Search Form Styles */
+.bookerville_search_widget {
+    display: flex;
+}
+
+.bookerville_search_widget .bookerville_input {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.bookerville_search_widget .bookerville_input input {
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+}
