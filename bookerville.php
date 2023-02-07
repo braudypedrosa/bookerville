@@ -4,7 +4,7 @@ Plugin Name: Bookerville
 Plugin URI: 
 Description: Lightweight plugin for getting Bookerville 
 Author: Braudy Pedrosa
-Version: 1.0
+Version: 1.1
 Author URI: https://www.buildupbookings.com/
 */
 
@@ -87,7 +87,6 @@ function _bookerville_listing_load_template(){
 // initialize plugin post type
 function _bookerville_post_types() {
 
-	
 	register_post_type( 'bookerville_listing',
 	
 		array('labels' => array(
@@ -127,6 +126,23 @@ function _bookerville_post_types() {
 
 }
 add_action( 'init', '_bookerville_post_types');
+
+add_filter('single_template', 'bookerville_property_single_page_template');
+
+function bookerville_property_single_page_template($single) {
+
+    global $post;
+
+    /* Checks for single template by post type */
+    if ( $post->post_type == 'bookerville_listing' ) {
+        if ( file_exists( BOOKERVILLE_DIR . '/views/single-property.php' ) ) {
+            return BOOKERVILLE_DIR . '/views/single-property.php';
+        }
+    }
+
+    return $single;
+
+}
 
 
 

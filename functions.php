@@ -40,8 +40,8 @@ function _bookerville_fetch_all_properties($initialized = false){
 }
 
 
-// get property details by property ID
-function _bookerville_fetch_property_details($property_id) {
+// get property details from the API by property ID
+function _bookerville_fetch_property_details_from_api($property_id) {
 
     $parameter = '&bkvPropertyId='.$property_id;
     $response = _bookerville_get(REQUEST_URL_PROPERTY_DETAILS, $parameter);
@@ -62,6 +62,18 @@ function _bookerville_fetch_property_details($property_id) {
     );
 
     return $property_details;
+}
+
+// get property details from custom post type by propery ID
+function _bookerville_fetch_property_details($property_id) {
+    global $wpdb;
+
+    $sql = "SELECT post_id FROM ".$wpdb->prefix."postmeta WHERE meta_key = 'property_id' AND meta_value='".$property_id."'";
+
+    $result = $wpdb->get_results($sql,ARRAY_A);
+    $post_id = ($result[0]['post_id']) ? $result[0]['post_id'] : 'Property not found!';
+
+    return $post_id;
 }
 
 // create new bookerville listing entry in wordpress
@@ -126,7 +138,7 @@ function _bookerville_initialize_listings() {
                 "offline" => $listing->offline,
             );
 
-            $listing_specifics = _bookerville_fetch_property_details($listing->property_id);
+            $listing_specifics = _bookerville_fetch_property_details_from_api($listing->property_id);
 
             $listing_details = array_merge($listing_details, $listing_specifics);
 
@@ -141,7 +153,13 @@ add_action( 'initialize_listings','_bookerville_initialize_listings' );
 
 
 function enqueue_required_assets() { 
+    wp_enqueue_style( 'bookerville-fontawesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css');
     wp_enqueue_style( 'bookerville-style', BOOKERVILLE_URL. 'assets/css/style.css' );
+    wp_enqueue_style( 'bookerville-slick-style', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css');
+
+    wp_enqueue_script( 'bookerville-jquery' , 'https://code.jquery.com/jquery-3.6.3.slim.min.js');
+    wp_enqueue_script( 'bookerville-slick-script', 'https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js', array('jquery'));
+    wp_enqueue_script( 'bookerville-custom-script', BOOKERVILLE_URL. 'assets/js/custom.js', array('jquery'));
   }
   add_action( 'wp_enqueue_scripts', 'enqueue_required_assets' );
 
